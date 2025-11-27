@@ -2,3 +2,4 @@ streamlit
 gradio-client==0.7.0
 Pillow
 requests
+gradio_client==0.10.0
