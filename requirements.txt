@@ -1,4 +1,4 @@
 streamlit
-gradio-client==0.16.1
+gradio-client==0.7.0
 Pillow
 requests
