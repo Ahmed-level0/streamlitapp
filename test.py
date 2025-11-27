@@ -1,43 +1,28 @@
-# streamlit_gradio_api_app.py
-
 import streamlit as st
-from gradio_client import Client, handle_file
+from gradio_client import Client
 from PIL import Image
 import tempfile
 
-# ---------------------
-# Connect to your API
-# ---------------------
+st.title("Gradio API Image Classifier")
+
 client = Client("Mohamed192003/image-classification-detection-system")
 
-# ---------------------
-# Streamlit UI
-# ---------------------
-st.title("Image Classification App (via Gradio API)")
-st.write("Upload an image and the HF Space will return the prediction.")
+uploaded = st.file_uploader("Upload Image", type=["png", "jpg", "jpeg"])
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-
-if uploaded_file is not None:
-    img = Image.open(uploaded_file)
+if uploaded is not None:
+    img = Image.open(uploaded)
     st.image(img, caption="Uploaded Image", use_column_width=True)
 
-    # Save to temp file so gradio_client can handle it
+    # Save to a temporary file
     with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
         img.save(tmp.name)
         temp_path = tmp.name
 
-    st.write("Classifying... Please wait.")
+    # Call Gradio API
+    result = client.predict(
+        image=temp_path,
+        api_name="/predict"
+    )
 
-    try:
-        result = client.predict(
-            image=handle_file(temp_path),
-            api_name="/predict"
-        )
-
-        st.subheader("Prediction Result:")
-        st.write(result)
-
-    except Exception as e:
-        st.error(f"Error calling the model API: {e}")
-
+    st.subheader("Prediction Result")
+    st.write(result)
